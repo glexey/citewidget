@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -15,8 +16,25 @@ public class CiteAppWidgetProvider extends AppWidgetProvider {
 	
 	public static String ACTION_APPWIDGET_CLICK = "org.glexey.citewidget.CiteAppWidgetProvider.ACTION_APPWIDGET_CLICK";
 	private static final String TAG = "CiteAppWidgetProvider";
+	private static final String pref_key = "org.glexey.citewidget.PREFERENCE_FILE_KEY";
 	
 	private static Language[] languages;
+	
+	private void putvar(Context ctx, String var_name, int new_value) {
+		SharedPreferences sharedPref = ctx.getSharedPreferences(pref_key, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putInt(var_name, new_value);
+		editor.commit();
+	}
+
+	private int getvar(Context ctx, String var_name) {
+		return getvar(ctx, var_name, 0);
+	}
+
+	private int getvar(Context ctx, String var_name, int default_value) {
+		SharedPreferences sharedPref = ctx.getSharedPreferences(pref_key, Context.MODE_PRIVATE);
+		return sharedPref.getInt(var_name, default_value);
+	}
 
 	public void loadLanguages(Context context) {
         Log.d(TAG, "loadLanguages("+context+")");
@@ -94,7 +112,9 @@ public class CiteAppWidgetProvider extends AppWidgetProvider {
 		String str = intent.getAction();
         Log.d(TAG, "onReceive(..) :: intent=" + intent + " action=" + str);
 		if (str.equals(ACTION_APPWIDGET_CLICK)) {
-	        Log.d(TAG, "onReceive(..) :: CLICK!!");
+			int n_onReceive_calls = getvar(context, "n_onReceive_calls", 0) + 1;
+			putvar(context, "n_onReceive_calls", n_onReceive_calls);
+	        Log.d(TAG, "onReceive(..) :: #" + n_onReceive_calls + " :: CLICK!!");
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget4x1);
             //views.setTextViewText(R.id.textCite, "TESTING");
