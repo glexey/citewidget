@@ -5,7 +5,6 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -15,28 +14,11 @@ import android.widget.RemoteViews;
 public class CiteAppWidgetProvider extends AppWidgetProvider {
 	
 	public static String ACTION_APPWIDGET_CLICK = "org.glexey.citewidget.CiteAppWidgetProvider.ACTION_APPWIDGET_CLICK";
-	private static final String TAG = "CiteAppWidgetProvider";
-	private static final String pref_key = "org.glexey.citewidget.PREFERENCE_FILE_KEY";
+	public static final String TAG = "CiteAppWidgetProvider";
 	
 	private static Language[] languages;
 	
-	private void putvar(Context ctx, String var_name, int new_value) {
-		SharedPreferences sharedPref = ctx.getSharedPreferences(pref_key, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putInt(var_name, new_value);
-		editor.commit();
-	}
-
-	private int getvar(Context ctx, String var_name) {
-		return getvar(ctx, var_name, 0);
-	}
-
-	private int getvar(Context ctx, String var_name, int default_value) {
-		SharedPreferences sharedPref = ctx.getSharedPreferences(pref_key, Context.MODE_PRIVATE);
-		return sharedPref.getInt(var_name, default_value);
-	}
-
-	public void loadLanguages(Context context) {
+	public void loadLanguages(Context context, Vars vars) {
         Log.d(TAG, "loadLanguages("+context+")");
         Resources res = context.getResources();
 		TypedArray ar = res.obtainTypedArray(R.array.languages);
@@ -44,15 +26,16 @@ public class CiteAppWidgetProvider extends AppWidgetProvider {
 		languages = new Language[len];
 		for (int i = 0; i < len; i++) {
 			int res_id = ar.getResourceId(i, 0);
-			languages[i] = new Language(res, res_id);
+			languages[i] = new Language(vars, res, res_id);
 		}
 		ar.recycle();
 	}
 	
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "onUpdate("+context+")");
+        Vars vars = new Vars(context); 
         
-        if (languages == null) loadLanguages(context);
+        if (languages == null) loadLanguages(context, vars);
 		final int N = appWidgetIds.length;
 
         // loop through all app widgets the user has enabled
@@ -110,10 +93,11 @@ public class CiteAppWidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String str = intent.getAction();
-        Log.d(TAG, "onReceive(..) :: intent=" + intent + " action=" + str);
+		Vars vars = new Vars(context); 
+        //Log.d(TAG, "onReceive(..) :: intent=" + intent + " action=" + str);
 		if (str.equals(ACTION_APPWIDGET_CLICK)) {
-			int n_onReceive_calls = getvar(context, "n_onReceive_calls", 0) + 1;
-			putvar(context, "n_onReceive_calls", n_onReceive_calls);
+			int n_onReceive_calls = vars.get("n_onReceive_calls", 0) + 1;
+			vars.put("n_onReceive_calls", n_onReceive_calls);
 	        Log.d(TAG, "onReceive(..) :: #" + n_onReceive_calls + " :: CLICK!!");
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget4x1);
@@ -125,10 +109,10 @@ public class CiteAppWidgetProvider extends AppWidgetProvider {
             int widgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID);
             
             // update widget instance language on click
-            if (languages == null) loadLanguages(context);
+            if (languages == null) loadLanguages(context, vars);
             Bundle dict = appWidgetManager.getAppWidgetOptions(widgetId);
             if (dict == null) Log.wtf(TAG, "appWidgetManager.getAppWidgetOptions("+widgetId+") == null");
-            Log.d(TAG, "dict="+dict+" languages="+languages);
+            //Log.d(TAG, "dict="+dict+" languages="+languages);
             Log.d(TAG, "dict[lang_id]="+dict.getInt("lang_id"));
             int new_lang_id = (dict.getInt("lang_id") + 1) % languages.length;
   			dict.putInt("lang_id", new_lang_id);
@@ -141,7 +125,7 @@ public class CiteAppWidgetProvider extends AppWidgetProvider {
             appWidgetManager.updateAppWidget(widgetId, views);
             //Log.d(TAG, "click: updateappwidget widgetId="+widgetId);
 		} else {
-	        Log.d(TAG, "calling super.onReceive(..)");
+	        Log.d(TAG, "onReceive() :: calling super.onReceive(..)");
 			super.onReceive(context, intent);
 		}
 	}
