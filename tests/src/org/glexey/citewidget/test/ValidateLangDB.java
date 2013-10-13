@@ -45,7 +45,7 @@ public class ValidateLangDB extends InstrumentationTestCase {
         assertEquals(quotes.length, db_ru.length());
 	}
 
-	public void testAppend() throws LangDBException {
+	public void testAppendShift() throws LangDBException {
 		db_ru.createDB();
 		Cite c0 = new Cite("Quote 0|Author 0|Comment 0");
 		Cite c1 = new Cite("Quote 1|Author 1");
@@ -60,6 +60,11 @@ public class ValidateLangDB extends InstrumentationTestCase {
 		assertTrue(c0.equals(db_ru.get(0)));
 		assertTrue(c1.equals(db_ru.get(1)));
 		assertTrue(c2.equals(db_ru.get(2)));
+		
+		Cite c0p = db_ru.shift();
+		assertEquals(2, db_ru.length());
+		assertTrue(c0.equals(c0p));
+		
 	}
 	
 }

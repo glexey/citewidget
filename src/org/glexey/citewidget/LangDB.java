@@ -91,4 +91,12 @@ public class LangDB {
 		return null;
 	}
 
+	/**
+	 * @return
+	 */
+	public Cite shift() {
+		// TODO Auto-generated method stub
+		return get(0);
+	}
+
 }
