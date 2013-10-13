@@ -8,18 +8,16 @@ import android.test.AndroidTestCase;
 
 public class ValidateVars extends AndroidTestCase {
 
-	private static final String pref_key = "org.glexey.citewidget.PREFERENCE_FILE_KEY";
-
 	Context ctx;
 	Vars vars;
 	
 	protected void setUp() throws Exception {
 		
-		ctx = getContext(); // context of test case, not the app under test
+		ctx = getContext(); // context of the AndroidTestCase, not the app under test..
 		                    // it's just easier to use
 		
 		// Clear all preferences
-		SharedPreferences prefs = ctx.getSharedPreferences(pref_key, Context.MODE_PRIVATE);
+		SharedPreferences prefs = ctx.getSharedPreferences(Vars.pref_key, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.clear();
 

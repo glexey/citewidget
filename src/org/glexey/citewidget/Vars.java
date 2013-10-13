@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 public class Vars {
 
-	private static final String pref_key = "org.glexey.citewidget.PREFERENCE_FILE_KEY";
+	public static final String pref_key = "org.glexey.citewidget.PREFERENCE_FILE_KEY";
 
 	private Context ctx;
 	
