@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="testCiteArrRU">
-        <item>aaa</item>
-        <item>bbb</item>
-        <item>ccc</item>
+        <item>Цитата номер 1|Алексей</item>
+        <item>Цитата номер 2|Настя</item>
+        <item>Цитата номер 3|Федя|5 лет</item>
     </string-array>
 </resources>
