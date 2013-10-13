@@ -22,8 +22,25 @@ public class Cite {
 		} else if (obj instanceof Cite) {
 			// If the text of two quotes match, they are equal
 			// Author/Comment doesn't matter in this case
-			return ((Cite) obj).text.equals(text);
+			Cite cite = (Cite) obj;
+			if (!cite.text.equals(text)) return false;
+			if (!cite.author.equals(author)) return false;
+			if (!cite.comment.equals(comment)) return false;
+			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Tests whether the quotes can be considered same quote,
+	 * disregarding comments and author. May in future test
+	 * for "approximate" text matching.
+	 * 
+	 * @param cite - quote to compare to
+	 * @return
+	 */
+	public boolean sameQuoteAs(Cite cite) {
+		if (equals(cite)) return true;
+		return cite.text.equals(text);
 	}
 }

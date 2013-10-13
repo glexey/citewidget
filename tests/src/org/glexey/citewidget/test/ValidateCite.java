@@ -29,11 +29,15 @@ public class ValidateCite extends AndroidTestCase {
 		assertTrue(c3.comment.equals(""));
 	}
 
-	public void testComparison() {
+	public void testQuoteComparison() {
 		Cite c1 = new Cite("Quote text 1|Quote Author 1|Quote Comments 1");
 		Cite c2 = new Cite("Quote text 2|Quote Author 2");
 		Cite c3 = new Cite("Quote text 1|Quote Author 3|Quote Comments 3");
-		assertTrue(c1.equals(c3));
-		assertFalse(c1.equals(c2));
+		Cite c4 = new Cite("Quote text 1|Quote Author 3|Quote Comments 3");
+		assertTrue(c1.sameQuoteAs(c3));
+		assertFalse(c1.equals(c3));
+		assertTrue(c3.equals(c4));
+		assertFalse(c1.sameQuoteAs(c2));
+		assertFalse("Arbitrary object comparison should not fail", c1.equals("")); 
 	}
 }
