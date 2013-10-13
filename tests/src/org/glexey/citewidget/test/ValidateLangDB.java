@@ -18,7 +18,7 @@ public class ValidateLangDB extends InstrumentationTestCase {
 		// context of the AndroidTestCase, not the app under test..
 		tst_ctx = getInstrumentation().getContext();
 
-		db_ru = new LangDB("ru");
+		db_ru = new LangDB(tst_ctx, "ru_test.db");
 		//db_ru.deleteDB();
 		//db_ru.createInitial();
 		super.setUp();
@@ -38,7 +38,7 @@ public class ValidateLangDB extends InstrumentationTestCase {
 	
 	public void testUpdateFromResource() throws LangDBException {
 		db_ru.createDB();
-		db_ru.updateFromResource(tst_ctx, R.array.testCiteArrRU);
+		db_ru.updateFromResource(R.array.testCiteArrRU);
 		// Check that the correct number of elements were read from the resource
         Resources res = tst_ctx.getResources();
         String[] quotes = res.getStringArray(R.array.testCiteArrRU);

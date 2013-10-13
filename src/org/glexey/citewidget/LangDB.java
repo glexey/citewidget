@@ -1,36 +1,44 @@
 package org.glexey.citewidget;
 
+import java.io.File;
+
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * @author aagaidiu
- *
- */
-/**
- * @author aagaidiu
- *
- */
-public class LangDB {
+public class LangDB extends SQLiteOpenHelper {
 
-	// Language identifier, for tracking purposes. E.g.: "ru"
-	public String language;
+	// Database name
+	private String name;
 	
-	public LangDB(String language) {
-		this.language = language;
+	private String dbFileName;
+
+	// Local copy of the context for database and resources access
+	private Context ctx;
+
+	public LangDB(Context ctx, String name) {
+    	super(ctx, name, null, 1);
+		this.name = name;
+        this.ctx = ctx;
+        dbFileName = ctx.getDatabasePath(name).getAbsolutePath();
 	}
 
 	/**
 	 * Create a new empty database file. If database file exists already, first remove it.
+	 * @throws LangDBException 
 	 */
-	public void createDB() {
-		// TODO Auto-generated method stub
+	public void createDB() throws LangDBException {
 		deleteDB();
+	    SQLiteDatabase db = this.getWritableDatabase();
+	    db.close();
 	}
 
-	public void deleteDB() {
+	public void deleteDB() throws LangDBException {
 		// TODO Auto-generated method stub
 		// This method deletes the database file, if it exists
-		if (!dbExists()) return;
+		File file = new File(dbFileName);
+		if (!file.exists()) return;
+		if (!file.delete()) throw new LangDBException("Couldn't delete database file");
 	}
 	
 	public int length() throws LangDBException {
@@ -39,9 +47,10 @@ public class LangDB {
 		return(0);
 	}
 
+	// Check if the database file exists in a file system
 	public boolean dbExists() {
-		// TODO Auto-generated method stub
-		return false;
+		File file = new File(dbFileName);
+		return file.exists(); 
 	}
 
 	/**
@@ -50,7 +59,7 @@ public class LangDB {
 	 * @param ctx    - Context to get the resources from
 	 * @param resid  - String array resource ID
 	 */
-	public void updateFromResource(Context ctx, int resID) {
+	public void updateFromResource(int resID) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -99,4 +108,20 @@ public class LangDB {
 		return get(0);
 	}
 
+	@Override
+	public void onCreate(SQLiteDatabase db) {
+
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
 }
