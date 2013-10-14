@@ -29,16 +29,22 @@ public class LangDB extends SQLiteOpenHelper {
 	 */
 	public void createDB() throws LangDBException {
 		deleteDB();
-	    SQLiteDatabase db = this.getWritableDatabase();
+	    SQLiteDatabase db = getReadableDatabase();
 	    db.close();
 	}
 
+	
+	/**
+	 * Delete the database file, if it exists
+	 * @throws LangDBException
+	 */
 	public void deleteDB() throws LangDBException {
-		// TODO Auto-generated method stub
-		// This method deletes the database file, if it exists
 		File file = new File(dbFileName);
 		if (!file.exists()) return;
+		close(); // In case database is open, close it
 		if (!file.delete()) throw new LangDBException("Couldn't delete database file");
+		File file2 = new File(dbFileName + "-journal");
+		file2.delete(); // Will not check, it's not essential to delete this one
 	}
 	
 	public int length() throws LangDBException {
@@ -110,16 +116,23 @@ public class LangDB extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-
+        String CREATE_QUOTES_TABLE = "CREATE TABLE quotes ("
+                + " id INTEGER PRIMARY KEY,"
+        		+ " quote_text TEXT,"
+                + " quote_author TEXT,"
+                + " quote_comment TEXT,"
+                + " used INTEGER"
+        		+ ")";
+        db.execSQL(CREATE_QUOTES_TABLE);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+		double a = 1.0 / 0.0;
 	}
 
 	/**
-	 * @return the name
+	 * @return the database name
 	 */
 	public String getName() {
 		return name;

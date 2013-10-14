@@ -7,24 +7,31 @@ import org.glexey.citewidget.LangDB.LangDBException;
 import android.content.Context;
 import android.content.res.Resources;
 import android.test.InstrumentationTestCase;
+import android.test.RenamingDelegatingContext;
 
 public class ValidateLangDB extends InstrumentationTestCase {
 
 	private LangDB db_ru;
 	private Context tst_ctx;
+	private RenamingDelegatingContext target_ctx;
 	
 	protected void setUp() throws Exception {
 		
-		// context of the AndroidTestCase, not the app under test..
+		// context of the AndroidTestCase
 		tst_ctx = getInstrumentation().getContext();
 
-		db_ru = new LangDB(tst_ctx, "ru_test.db");
-		//db_ru.deleteDB();
-		//db_ru.createInitial();
+		// For database testing, have to use the context of target application,
+		// otherwise file creation will failed due to lack of access.
+		// Use renaming context not to accidentally corrupt the application files.
+		target_ctx = new RenamingDelegatingContext(getInstrumentation().getTargetContext(), "test_");
+
+		db_ru = new LangDB(target_ctx, "ru_test.db");
+		
 		super.setUp();
 	}
 
 	protected void tearDown() throws Exception {
+		db_ru.deleteDB();
 		super.tearDown();
 	}
 	
