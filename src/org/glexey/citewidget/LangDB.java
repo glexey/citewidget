@@ -5,6 +5,7 @@ import java.io.File;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -19,6 +20,7 @@ public class LangDB extends SQLiteOpenHelper {
 	// main table name
 	private static final String TABLE_QUOTES = "quotes";
 	// main table field names
+	private static final String KEY_ID = "id";
 	private static final String KEY_TEXT = "text";
 	private static final String KEY_AUTHOR = "author";
 	private static final String KEY_COMMENT = "comment";
@@ -113,6 +115,8 @@ public class LangDB extends SQLiteOpenHelper {
 		if (!dbExists()) throw new LangDBException("DB does not exist");
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues values = new ContentValues();
+		if (DatabaseUtils.queryNumEntries(db, TABLE_QUOTES) == 0)
+			values.put(KEY_ID, 0); // to start row auto-increment from 0 instead of 1
 		values.put(KEY_TEXT, cite.text);
 		values.put(KEY_AUTHOR, cite.author);
 		values.put(KEY_COMMENT, cite.comment);
@@ -122,14 +126,31 @@ public class LangDB extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * @param i
+	 * @param id
 	 * @return
 	 * @throws LangDBException 
 	 */
-	public Cite get(int i) throws LangDBException {
+	public Cite get(int id) throws LangDBException {
 		if (!dbExists()) throw new LangDBException("DB does not exist");
-		// TODO Auto-generated method stub
-		return null;
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cursor = db.query(TABLE_QUOTES,
+				new String[] { KEY_TEXT, KEY_AUTHOR, KEY_COMMENT, KEY_USED },
+				KEY_ID + "=?",
+	            new String[] { String.valueOf(id) }, null, null, null);
+	    if (cursor != null)
+	        cursor.moveToFirst();
+	    else
+	    	throw new LangDBException("LangDB.get(): record not found");
+	 
+	    Cite cite = new Cite(
+	    		cursor.getString(0),  // text
+	            cursor.getString(1),  // author
+	            cursor.getString(2),  // comment
+	            cursor.getInt(3) == 1 // used
+	            );
+
+		db.close();
+		return cite;
 	}
 
 	/**
@@ -143,8 +164,8 @@ public class LangDB extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-        String CREATE_QUOTES_TABLE = "CREATE TABLE " + TABLE_QUOTES
-                + "( id INTEGER PRIMARY KEY, "
+        String CREATE_QUOTES_TABLE = "CREATE TABLE " + TABLE_QUOTES + "( "
+        		+ KEY_ID + " INTEGER PRIMARY KEY, "
         		+ KEY_TEXT + " quote_text TEXT, "
                 + KEY_AUTHOR + " TEXT, "
                 + KEY_COMMENT + " TEXT, "

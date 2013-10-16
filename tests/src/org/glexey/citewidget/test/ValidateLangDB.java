@@ -51,6 +51,15 @@ public class ValidateLangDB extends InstrumentationTestCase {
 		assertEquals(1, db_ru.length());
 	}
 	
+	public void testBasicGet() throws LangDBException {
+		db_ru.deleteDB();
+		db_ru.createDB();
+		Cite c0 = new Cite("Quote 0|Author 0|Comment 0");
+		db_ru.append(c0);
+		Cite c1 = db_ru.get(0);
+		assertTrue(c0.equals(c1));
+	}
+	
 	public void testUpdateFromResource() throws LangDBException {
 		db_ru.deleteDB();
 		db_ru.createDB();
