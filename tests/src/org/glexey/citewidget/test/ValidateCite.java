@@ -29,6 +29,12 @@ public class ValidateCite extends AndroidTestCase {
 		assertTrue(c3.comment.equals(""));
 	}
 
+	public void testComboConstructor() {
+		Cite c1 = new Cite("Quote text 1|Quote Author 1|Quote Comments 1");
+		Cite c2 = new Cite("Quote text 1", "Quote Author 1", "Quote Comments 1", false);
+		assertTrue(c1.equals(c2));
+	}
+
 	public void testQuoteComparison() {
 		Cite c1 = new Cite("Quote text 1|Quote Author 1|Quote Comments 1");
 		Cite c2 = new Cite("Quote text 2|Quote Author 2");

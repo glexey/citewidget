@@ -15,6 +15,13 @@ public class Cite {
 		if (tokens.length > 2) comment = tokens[2];
 	}
 	
+	public Cite(String text, String author, String comment, boolean used) {
+		this.text = text;
+		this.author = author;
+		this.comment = comment;
+		this.used = used;
+	}
+
 	public boolean equals(Object obj) {
 		// if the two objects are equal in reference, they are equal
 		if (this == obj) {
