@@ -158,8 +158,12 @@ public class LangDB extends SQLiteOpenHelper {
 	 * @throws LangDBException 
 	 */
 	public Cite shift() throws LangDBException {
-		// TODO Auto-generated method stub
-		return get(0);
+		if (!dbExists()) throw new LangDBException("DB does not exist");
+		Cite cite = get(0);
+		SQLiteDatabase db = getWritableDatabase();
+		db.delete(TABLE_QUOTES, KEY_ID + "=0", null);
+		db.close();
+		return cite;
 	}
 
 	@Override
