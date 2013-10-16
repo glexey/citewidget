@@ -2,7 +2,9 @@ package org.glexey.citewidget;
 
 import java.io.File;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -13,6 +15,14 @@ public class LangDB extends SQLiteOpenHelper {
 	
 	private String dbFileName;
 
+	// main table name
+	private static final String TABLE_QUOTES = "quotes";
+	// main table field names
+	private static final String KEY_TEXT = "text";
+	private static final String KEY_AUTHOR = "author";
+	private static final String KEY_COMMENT = "comment";
+	private static final String KEY_USED = "used";
+	
 	// Local copy of the context for database and resources access
 	private Context ctx;
 
@@ -47,10 +57,12 @@ public class LangDB extends SQLiteOpenHelper {
 		file2.delete(); // Will not check, it's not essential to delete this one
 	}
 	
-	public int length() throws LangDBException {
+	public long length() throws LangDBException {
 		if (!dbExists()) throw new LangDBException("DB does not exist");
-		// TODO stub
-		return(0);
+		SQLiteDatabase db = getReadableDatabase();
+		long n = DatabaseUtils.queryNumEntries(db, TABLE_QUOTES);
+		db.close();
+		return(n);
 	}
 
 	// Check if the database file exists in a file system
@@ -90,38 +102,50 @@ public class LangDB extends SQLiteOpenHelper {
 
 
 	/**
-	 * @param cite
+	 * Appends the quote record to the end of the list/table
+	 * @param cite - The quote to add
+	 * @throws LangDBException 
 	 */
-	public void append(Cite cite) {
-		// TODO Auto-generated method stub
-		
+	public void append(Cite cite) throws LangDBException {
+		if (!dbExists()) throw new LangDBException("DB does not exist");
+		SQLiteDatabase db = getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(KEY_TEXT, cite.text);
+		values.put(KEY_AUTHOR, cite.author);
+		values.put(KEY_COMMENT, cite.comment);
+		values.put(KEY_USED, cite.used);
+		db.insert(TABLE_QUOTES, null, values);
+		db.close();
 	}
 
 	/**
 	 * @param i
 	 * @return
+	 * @throws LangDBException 
 	 */
-	public Cite get(int i) {
+	public Cite get(int i) throws LangDBException {
+		if (!dbExists()) throw new LangDBException("DB does not exist");
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	/**
 	 * @return
+	 * @throws LangDBException 
 	 */
-	public Cite shift() {
+	public Cite shift() throws LangDBException {
 		// TODO Auto-generated method stub
 		return get(0);
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-        String CREATE_QUOTES_TABLE = "CREATE TABLE quotes ("
-                + " id INTEGER PRIMARY KEY,"
-        		+ " quote_text TEXT,"
-                + " quote_author TEXT,"
-                + " quote_comment TEXT,"
-                + " used INTEGER"
+        String CREATE_QUOTES_TABLE = "CREATE TABLE " + TABLE_QUOTES
+                + "( id INTEGER PRIMARY KEY, "
+        		+ KEY_TEXT + " quote_text TEXT, "
+                + KEY_AUTHOR + " TEXT, "
+                + KEY_COMMENT + " TEXT, "
+                + KEY_USED + " INTEGER"
         		+ ")";
         db.execSQL(CREATE_QUOTES_TABLE);
 	}

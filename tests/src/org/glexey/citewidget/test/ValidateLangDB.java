@@ -43,7 +43,16 @@ public class ValidateLangDB extends InstrumentationTestCase {
 		assertEquals(0, db_ru.length());
 	}
 	
+	public void testBasicAppend() throws LangDBException {
+		db_ru.deleteDB();
+		db_ru.createDB();
+		Cite c0 = new Cite("Quote 0|Author 0|Comment 0");
+		db_ru.append(c0);
+		assertEquals(1, db_ru.length());
+	}
+	
 	public void testUpdateFromResource() throws LangDBException {
+		db_ru.deleteDB();
 		db_ru.createDB();
 		db_ru.updateFromResource(R.array.testCiteArrRU);
 		// Check that the correct number of elements were read from the resource
@@ -53,6 +62,7 @@ public class ValidateLangDB extends InstrumentationTestCase {
 	}
 
 	public void testAppendShift() throws LangDBException {
+		db_ru.deleteDB();
 		db_ru.createDB();
 		Cite c0 = new Cite("Quote 0|Author 0|Comment 0");
 		Cite c1 = new Cite("Quote 1|Author 1");
