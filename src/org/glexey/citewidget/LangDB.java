@@ -4,6 +4,7 @@ import java.io.File;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -24,12 +25,12 @@ public class LangDB extends SQLiteOpenHelper {
 	private static final String KEY_USED = "used";
 	
 	// Local copy of the context for database and resources access
-	private Context ctx;
+	//private Context ctx;
 
 	public LangDB(Context ctx, String name) {
     	super(ctx, name, null, 1);
 		this.name = name;
-        this.ctx = ctx;
+        //this.ctx = ctx;
         dbFileName = ctx.getDatabasePath(name).getAbsolutePath();
 	}
 
@@ -74,12 +75,14 @@ public class LangDB extends SQLiteOpenHelper {
 	/**
 	 * Read string array specified by resID, convert them to Cite objects and 
 	 * insert them into the database.  
-	 * @param ctx    - Context to get the resources from
+	 * @param res    - Resources object
 	 * @param resid  - String array resource ID
+	 * @throws LangDBException 
 	 */
-	public void updateFromResource(int resID) {
-		// TODO Auto-generated method stub
-		
+	public void updateFromResource(Resources res, int resID) throws LangDBException {
+		String[] quotes = res.getStringArray(resID);
+		for (String s : quotes)
+			append(new Cite(s));
 	}
 
 	
@@ -152,7 +155,6 @@ public class LangDB extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		double a = 1.0 / 0.0;
 	}
 
 	/**

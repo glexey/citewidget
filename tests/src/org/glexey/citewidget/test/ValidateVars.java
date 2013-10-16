@@ -13,8 +13,7 @@ public class ValidateVars extends AndroidTestCase {
 	
 	protected void setUp() throws Exception {
 		
-		ctx = getContext(); // context of the AndroidTestCase, not the app under test..
-		                    // it's just easier to use
+		ctx = getContext(); // context of the app under test
 		
 		// Clear all preferences
 		SharedPreferences prefs = ctx.getSharedPreferences(Vars.pref_key, Context.MODE_PRIVATE);

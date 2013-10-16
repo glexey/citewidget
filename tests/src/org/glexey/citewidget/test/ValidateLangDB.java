@@ -54,9 +54,9 @@ public class ValidateLangDB extends InstrumentationTestCase {
 	public void testUpdateFromResource() throws LangDBException {
 		db_ru.deleteDB();
 		db_ru.createDB();
-		db_ru.updateFromResource(R.array.testCiteArrRU);
-		// Check that the correct number of elements were read from the resource
         Resources res = tst_ctx.getResources();
+		db_ru.updateFromResource(res, R.array.testCiteArrRU);
+		// Check that the correct number of elements were read from the resource
         String[] quotes = res.getStringArray(R.array.testCiteArrRU);
         assertEquals(quotes.length, db_ru.length());
 	}
