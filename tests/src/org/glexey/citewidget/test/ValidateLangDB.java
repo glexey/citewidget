@@ -21,7 +21,7 @@ public class ValidateLangDB extends InstrumentationTestCase {
 		tst_ctx = getInstrumentation().getContext();
 
 		// For database testing, have to use the context of target application,
-		// otherwise file creation will failed due to lack of access.
+		// otherwise file creation will fail due to lack of access.
 		// Use renaming context not to accidentally corrupt the application files.
 		target_ctx = new RenamingDelegatingContext(getInstrumentation().getTargetContext(), "test_");
 
