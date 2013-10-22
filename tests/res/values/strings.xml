@@ -2,5 +2,17 @@
 <resources>
 
     <string name="app_name">CiteWidgetTest</string>
-
+    
+    <string-array name="languages">
+        <item>ru</item>
+        <item>en</item>
+        <item>es</item>
+    </string-array>
+    
+    <string-array name="testCiteArrRU">
+        <item>Цитата номер 1|Алексей</item>
+        <item>Цитата номер 2|Настя</item>
+        <item>Цитата номер 3|Федя|5 лет</item>
+    </string-array>
+    
 </resources>

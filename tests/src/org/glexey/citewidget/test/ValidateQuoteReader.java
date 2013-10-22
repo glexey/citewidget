@@ -45,8 +45,36 @@ public class ValidateQuoteReader extends InstrumentationTestCase {
 	// The main functionality of QuoteReader class is to give us quotes
 	// let's test that it always gives us some quote
 	public void testGetNextQuoteBasic() {
-		QuoteReader reader = new QuoteReader(tst_ctx);
+		QuoteReader reader = new QuoteReader(tst_ctx, R.array.languages);
 		Cite cite = reader.GetNextQuote();
 		assertNotNull(cite);
+	}
+	
+	// QuoteReader should get the list of languages from resources upon
+	// constructing, from string array 'languages'
+	public void testLanguagesArrayConstruction() {
+		QuoteReader reader = new QuoteReader(tst_ctx, R.array.languages);
+		String[] langs = reader.getlanguageList();
+		assertNotNull(langs);
+		assertTrue(langs.length == 3);
+		assertTrue(langs[0].equals("ru"));
+		assertTrue(langs[1].equals("en"));
+		assertTrue(langs[2].equals("es"));
+	}
+	
+	private void initDictionarySet() {
+		// Create a set of 2 dictionaries per language, e.g.: "ru.fix", "ru.web"
+	}
+	
+	public void testReaderInitialization() {
+		QuoteReader reader = new QuoteReader(tst_ctx, R.array.languages);
+		initDictionarySet();
+		reader.ClearState();
+		Cite cite = reader.GetNextQuote();
+		assertTrue(cite.equals(new Cite("Цитата номер 1|Алексей")));
+	}
+	
+	public void testLanguageDisabling() {
+		fail("testLanguageDisabling() not yet written");
 	}
 }
