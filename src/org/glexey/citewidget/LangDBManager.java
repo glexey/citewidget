@@ -3,6 +3,8 @@
  */
 package org.glexey.citewidget;
 
+import java.util.ArrayList;
+
 import org.glexey.citewidget.Cite;
 
 import android.content.Context;
@@ -14,6 +16,9 @@ import android.content.res.Resources;
  */
 public class LangDBManager {
 
+	public static Cite stubCite = new Cite("No quotes left");
+	public static final int historySize = 20; 
+	
 	private String[] languageList;
 	//private Context ctx;
 	
@@ -35,7 +40,16 @@ public class LangDBManager {
 	 */
 	public Cite getNextQuote() {
 		// TODO Auto-generated method stub
-		return new Cite("No quotes left");
+		return stubCite;
+	}
+
+	/**
+	 * @param string
+	 * @return
+	 */
+	public Cite getNextQuote(String lang) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**
@@ -55,6 +69,23 @@ public class LangDBManager {
 	public void initFromScratch() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * @param string
+	 * @param cite1
+	 */
+	public void addQuote(String lang, Cite cite) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<Cite> getQuoteHistory() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
