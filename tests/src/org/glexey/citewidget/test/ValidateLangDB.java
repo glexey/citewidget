@@ -13,19 +13,13 @@ public class ValidateLangDB extends InstrumentationTestCase {
 
 	private LangDB db_ru;
 	private Context tst_ctx;
-	private RenamingDelegatingContext target_ctx;
 	
 	protected void setUp() throws Exception {
 		
 		// context of the AndroidTestCase
 		tst_ctx = getInstrumentation().getContext();
 
-		// For database testing, have to use the context of target application,
-		// otherwise file creation will fail due to lack of access.
-		// Use renaming context not to accidentally corrupt the application files.
-		target_ctx = new RenamingDelegatingContext(getInstrumentation().getTargetContext(), "test_");
-
-		db_ru = new LangDB(target_ctx, "ru_test.db");
+		db_ru = new LangDB(tst_ctx, "ru_test.db");
 		
 		super.setUp();
 	}
