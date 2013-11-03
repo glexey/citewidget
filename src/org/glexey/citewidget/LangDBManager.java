@@ -53,7 +53,7 @@ public class LangDBManager {
 			if (!langEnabled(lang)) continue;
 			Cite cite = getNextQuote(languageList[lang]);
 			if (cite != null) {
-				vars.put("lastLang", lastLang);
+				vars.put("lastLang", lang);
 				return cite;
 			}
 		}

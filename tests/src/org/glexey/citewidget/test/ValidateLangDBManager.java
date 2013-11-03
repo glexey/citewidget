@@ -104,24 +104,26 @@ public class ValidateLangDBManager extends InstrumentationTestCase {
 		// Create a set of 2 dictionaries per language, e.g.: "ru.fix", "ru.web"
 		reader.initFromScratch();
 		
-		reader.addQuote("ru.fix", new Cite("ru_fix1"));
-		reader.addQuote("en.fix", new Cite("en_fix1"));
-		reader.addQuote("es.fix", new Cite("es_fix1"));
-		reader.addQuote("es.fix", new Cite("es_fix2"));
+		reader.addQuote("ru", new Cite("ru_web1"));
+		reader.addQuote("en", new Cite("en_web1"));
+		reader.addQuote("es", new Cite("es_web1"));
+		reader.addQuote("es", new Cite("es_web2"));
 		// Now we should have 12 quotes
-		assertTrue(reader.getNextQuote().equals(new Cite("ru_fix1")));
-		assertTrue(reader.getNextQuote().equals(new Cite("en_fix1")));
-		assertTrue(reader.getNextQuote().equals(new Cite("es_fix2"))); // first in last out
-		assertTrue(reader.getNextQuote().equals(new Cite("es_fix1")));
-		assertTrue(reader.getNextQuote().equals(new Cite("Цитата номер 1|Алексей")));
-		assertTrue(reader.getNextQuote().equals(new Cite("English quote 1|Alexey")));
-		assertTrue(reader.getNextQuote().equals(new Cite("Cita Española 1|Alexei")));
-		assertTrue(reader.getNextQuote().equals(new Cite("Цитата номер 2|Настя")));
-		assertTrue(reader.getNextQuote().equals(new Cite("English quote 2|Nastuu")));
-		assertTrue(reader.getNextQuote().equals(new Cite("Cita Española 2|Nastya")));
-		assertTrue(reader.getNextQuote().equals(new Cite("Цитата номер 3|Федя|5 лет")));
-		assertTrue(reader.getNextQuote().equals(new Cite("English quote 3|Fyodor|5 years")));
-		assertTrue(reader.getNextQuote().equals(new Cite("Cita Española 3|Fedya|5 años")));
+		Cite c;
+		// "web": first in last out; "fix": out in order
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("ru_web1")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("en_web1")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("es_web2")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("Цитата номер 1|Алексей")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("English quote 1|Alexey")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("es_web1")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("Цитата номер 2|Настя")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("English quote 2|Nastuu")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("Cita Española 1|Alexei")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("Цитата номер 3|Федя|5 лет")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("English quote 3|Fyodor|5 years")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("Cita Española 2|Nastya")));
+		c=reader.getNextQuote(); assertTrue(wrongQuote(c), c.equals(new Cite("Cita Española 3|Fedya|5 años")));
 	}
 	
 	public void testHistory() {
