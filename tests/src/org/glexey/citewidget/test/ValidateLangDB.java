@@ -7,7 +7,6 @@ import org.glexey.citewidget.LangDB.LangDBException;
 import android.content.Context;
 import android.content.res.Resources;
 import android.test.InstrumentationTestCase;
-import android.test.RenamingDelegatingContext;
 
 public class ValidateLangDB extends InstrumentationTestCase {
 
@@ -58,7 +57,7 @@ public class ValidateLangDB extends InstrumentationTestCase {
 		db_ru.deleteDB();
 		db_ru.createDB();
         Resources res = tst_ctx.getResources();
-		db_ru.updateFromResource(res, R.array.testCiteArrRU);
+		db_ru.updateFromResource(R.array.testCiteArrRU);
 		// Check that the correct number of elements were read from the resource
         String[] quotes = res.getStringArray(R.array.testCiteArrRU);
         assertEquals(quotes.length, db_ru.length());

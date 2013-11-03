@@ -27,12 +27,12 @@ public class LangDB extends SQLiteOpenHelper {
 	private static final String KEY_USED = "used";
 	
 	// Local copy of the context for database and resources access
-	//private Context ctx;
+	private Context ctx;
 
 	public LangDB(Context ctx, String name) {
     	super(ctx, name, null, 1);
 		this.name = name;
-        //this.ctx = ctx;
+        this.ctx = ctx;
         dbFileName = ctx.getDatabasePath(name).getAbsolutePath();
 	}
 
@@ -81,7 +81,8 @@ public class LangDB extends SQLiteOpenHelper {
 	 * @param resid  - String array resource ID
 	 * @throws LangDBException 
 	 */
-	public void updateFromResource(Resources res, int resID) throws LangDBException {
+	public void updateFromResource(int resID) throws LangDBException {
+		Resources res = this.ctx.getResources();
 		String[] quotes = res.getStringArray(resID);
 		for (String s : quotes)
 			append(new Cite(s));
