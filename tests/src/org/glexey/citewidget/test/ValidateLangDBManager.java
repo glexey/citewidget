@@ -4,11 +4,13 @@
 package org.glexey.citewidget.test;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.glexey.citewidget.Cite;
 import org.glexey.citewidget.LangDBManager;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.test.InstrumentationTestCase;
 //import android.test.RenamingDelegatingContext;
 
@@ -38,6 +40,17 @@ public class ValidateLangDBManager extends InstrumentationTestCase {
 		super.tearDown();
 	}
 
+	private String wrongQuote(Cite cite) {
+		return "Wrong quote: \"" + cite.text + "\"";
+	}
+	
+	public void testResourceIDs() {
+		String pkg = tst_ctx.getPackageName();
+		Resources res = tst_ctx.getResources();
+		int id = res.getIdentifier("CiteArrRU", "array", pkg);
+		assertEquals(R.array.CiteArrRU, id);
+	}
+	
 	// The main functionality of LangDBManager class is to give us quotes
 	// let's test that it always gives us some quote, even if a stub.
 	public void testGetNextQuoteBasic() {
@@ -72,7 +85,7 @@ public class ValidateLangDBManager extends InstrumentationTestCase {
 		// Create a set of 2 dictionaries per language, e.g.: "ru.fix", "ru.web"
 		reader.initFromScratch();
 		Cite cite = reader.getNextQuote();
-		assertTrue(cite.equals(new Cite("Цитата номер 1|Алексей")));
+		assertTrue(wrongQuote(cite), cite.equals(new Cite("Цитата номер 1|Алексей")));
 	}
 	
 	// Add a quote to the specified dictionary

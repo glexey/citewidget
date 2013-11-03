@@ -23,6 +23,7 @@ public class LangDBManager {
 	
 	private String[] languageList;
 	private Context ctx;
+	Vars vars;
 	
 	/**
 	 * @param ctx 
@@ -34,13 +35,28 @@ public class LangDBManager {
 		// read the list of languages from the resources
 		Resources res = this.ctx.getResources();
 		languageList = res.getStringArray(resID);
+		
+		vars = new Vars(ctx);
 	}
 
+	private boolean langEnabled(int lang) {
+		return true;
+	} 
+	
 	/**
 	 * @return
 	 */
 	public Cite getNextQuote() {
-		// TODO Auto-generated method stub
+		int lastLang = vars.get("lastLang", -1);
+		for (int i=1; i<=languageList.length; i++) {
+			int lang = (lastLang + i) % languageList.length;
+			if (!langEnabled(lang)) continue;
+			Cite cite = getNextQuote(languageList[lang]);
+			if (cite != null) {
+				vars.put("lastLang", lastLang);
+				return cite;
+			}
+		}
 		return stubCite;
 	}
 
@@ -65,7 +81,10 @@ public class LangDBManager {
 		LangDB hist = new LangDB(ctx, "history");
 		Cite cite;
 		try {
-			cite = db.shift();
+			if (src == "fix")
+				cite = db.shift();
+			else
+				cite = db.pop();
 			if (cite != null)
 				hist.append(cite);
 			return cite;
@@ -103,18 +122,20 @@ public class LangDBManager {
 	 * dictionary, which will be appended on each getNextQuote() call.
 	 */
 	public void initFromScratch() {
-		for (int i=0; i<languageList.length; i++) {
+		for (int i = 0; i < languageList.length; i++) {
 			String lang = languageList[i];
 			LangDB fix_db = new LangDB(ctx, lang + ".fix");
 			LangDB web_db = new LangDB(ctx, lang + ".web");
 			int fixResId = ctx.getResources().getIdentifier(
-					"CiteArr" + lang.toUpperCase(Locale.US), "id", ctx.getPackageName());
+					"CiteArr" + lang.toUpperCase(Locale.US), "array",
+					ctx.getPackageName());
 			try {
 				fix_db.deleteDB();
 				fix_db.createDB();
 				web_db.deleteDB();
 				web_db.createDB();
-				if (fixResId != 0) fix_db.updateFromResource(fixResId);
+				if (fixResId != 0)
+					fix_db.updateFromResource(fixResId);
 			} catch (LangDBException e) {
 				e.printStackTrace(); // STUB
 			}
@@ -126,6 +147,8 @@ public class LangDBManager {
 		} catch (LangDBException e) {
 			e.printStackTrace(); // STUB
 		}
+		// Initialize "last used language" pointer
+		vars.put("lastLang", -1);
 	}
 
 	/**
