@@ -9,17 +9,17 @@
         <item>es</item>
     </string-array>
     
-    <string-array name="testCiteArrRU">
+    <string-array name="CiteArrRU">
         <item>Цитата номер 1|Алексей</item>
         <item>Цитата номер 2|Настя</item>
         <item>Цитата номер 3|Федя|5 лет</item>
     </string-array>
-    <string-array name="testCiteArrEN">
+    <string-array name="CiteArrEN">
         <item>English quote 1|Alexey</item>
         <item>English quote 2|Nastuu</item>
         <item>English quote 3|Fyodor|5 years</item>
         </string-array>
-        <string-array name="testCiteArrES">
+        <string-array name="CiteArrES">
         <item>Cita Española 1|Alexei</item>
         <item>Cita Española 2|Nastya</item>
         <item>Cita Española 3|Fedya|5 años</item>

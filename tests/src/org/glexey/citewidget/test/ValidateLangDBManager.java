@@ -19,7 +19,6 @@ import android.test.InstrumentationTestCase;
 public class ValidateLangDBManager extends InstrumentationTestCase {
 
 	private Context tst_ctx;
-	//private RenamingDelegatingContext target_ctx;
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -28,11 +27,6 @@ public class ValidateLangDBManager extends InstrumentationTestCase {
 		
 		// context of the AndroidTestCase
 		tst_ctx = getInstrumentation().getContext();
-
-		// For ******** testing, have to use the context of target application,
-		// otherwise file creation will fail due to lack of access.
-		// Use renaming context not to accidentally corrupt the application files.
-		//target_ctx = new RenamingDelegatingContext(getInstrumentation().getTargetContext(), "test_");
 
 		super.setUp();
 	}
@@ -45,11 +39,20 @@ public class ValidateLangDBManager extends InstrumentationTestCase {
 	}
 
 	// The main functionality of LangDBManager class is to give us quotes
-	// let's test that it always gives us some quote, even if a stub
+	// let's test that it always gives us some quote, even if a stub.
 	public void testGetNextQuoteBasic() {
 		LangDBManager reader = new LangDBManager(tst_ctx, R.array.languages);
 		Cite cite = reader.getNextQuote();
 		assertNotNull(cite);
+	}
+		
+	// getNextQuote("lang", "src") should return null if corresponding DB is empty
+	public void testGetNextQuoteLangSrcBasic() {
+		LangDBManager reader = new LangDBManager(tst_ctx, R.array.languages);
+		// Create a set of 2 dictionaries per language, e.g.: "ru.fix", "ru.web"
+		reader.initFromScratch();
+		Cite cite = reader.getNextQuote("ru", "web");
+		assertNull(cite);
 	}
 	
 	// LangDBManager should get the list of languages from resources upon
@@ -78,8 +81,8 @@ public class ValidateLangDBManager extends InstrumentationTestCase {
 		// Create a set of 2 dictionaries per language, e.g.: "ru.fix", "ru.web"
 		reader.initFromScratch();
 		Cite cite1 = new Cite("Test quote");
-		reader.addQuote("ru.web", cite1);
-		Cite cite2 = reader.getNextQuote("ru.web");
+		reader.addQuote("ru", cite1);
+		Cite cite2 = reader.getNextQuote("ru", "web");
 		assertTrue(cite1.equals(cite2));
 	}
 	
