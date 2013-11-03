@@ -57,32 +57,45 @@ public class ValidateLangDB extends InstrumentationTestCase {
 		db_ru.deleteDB();
 		db_ru.createDB();
         Resources res = tst_ctx.getResources();
-		db_ru.updateFromResource(R.array.testCiteArrRU);
+		db_ru.updateFromResource(R.array.CiteArrRU);
 		// Check that the correct number of elements were read from the resource
-        String[] quotes = res.getStringArray(R.array.testCiteArrRU);
+        String[] quotes = res.getStringArray(R.array.CiteArrRU);
         assertEquals(quotes.length, db_ru.length());
 	}
 
-	public void testAppendShift() throws LangDBException {
+	public void testAppendShiftPop() throws LangDBException {
 		db_ru.deleteDB();
 		db_ru.createDB();
 		Cite c0 = new Cite("Quote 0|Author 0|Comment 0");
 		Cite c1 = new Cite("Quote 1|Author 1");
 		Cite c2 = new Cite("Quote 2");
+		Cite c3 = new Cite("Quote 3");
+		long l = 0;
 		db_ru.append(c0);
-		assertEquals(1, db_ru.length());
+		assertEquals(++l, db_ru.length());
 		db_ru.append(c1);
-		assertEquals(2, db_ru.length());
+		assertEquals(++l, db_ru.length());
 		db_ru.append(c2);
-		assertEquals(3, db_ru.length());
+		assertEquals(++l, db_ru.length());
+		db_ru.append(c3);
+		assertEquals(++l, db_ru.length());
 		
 		assertTrue(c0.equals(db_ru.get(0)));
 		assertTrue(c1.equals(db_ru.get(1)));
 		assertTrue(c2.equals(db_ru.get(2)));
+		assertTrue(c3.equals(db_ru.get(3)));
 		
 		Cite c0p = db_ru.shift();
-		assertEquals(2, db_ru.length());
+		assertEquals(--l, db_ru.length());
 		assertTrue(c0.equals(c0p));
+
+		Cite c1p = db_ru.shift();
+		assertEquals(--l, db_ru.length());
+		assertTrue(c1.equals(c1p));
+
+		Cite c3p = db_ru.pop();
+		assertEquals(--l, db_ru.length());
+		assertTrue(c3.equals(c3p));
 		
 	}
 	

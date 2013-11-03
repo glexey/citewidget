@@ -26,6 +26,9 @@ public class LangDB extends SQLiteOpenHelper {
 	private static final String KEY_COMMENT = "comment";
 	private static final String KEY_USED = "used";
 	
+	private static final String KEYS2QUERY =
+			KEY_TEXT + "," + KEY_AUTHOR + "," + KEY_COMMENT + "," + KEY_USED;
+	
 	// Local copy of the context for database and resources access
 	private Context ctx;
 
@@ -116,8 +119,6 @@ public class LangDB extends SQLiteOpenHelper {
 		if (!dbExists()) throw new LangDBException("DB does not exist");
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues values = new ContentValues();
-		if (DatabaseUtils.queryNumEntries(db, TABLE_QUOTES) == 0)
-			values.put(KEY_ID, 0); // to start row auto-increment from 0 instead of 1
 		values.put(KEY_TEXT, cite.text);
 		values.put(KEY_AUTHOR, cite.author);
 		values.put(KEY_COMMENT, cite.comment);
@@ -126,18 +127,22 @@ public class LangDB extends SQLiteOpenHelper {
 		db.close();
 	}
 
+	private String queryNth(long n) {
+		return " ORDER BY " + KEY_ID + " LIMIT 1 OFFSET " + n;
+	}
+	
 	/**
-	 * @param id
+	 * @param l
 	 * @return
 	 * @throws LangDBException 
 	 */
-	public Cite get(int id) throws LangDBException {
+	public Cite get(long l) throws LangDBException {
 		if (!dbExists()) throw new LangDBException("DB does not exist");
 		SQLiteDatabase db = getReadableDatabase();
-		Cursor cursor = db.query(TABLE_QUOTES,
-				new String[] { KEY_TEXT, KEY_AUTHOR, KEY_COMMENT, KEY_USED },
-				KEY_ID + "=?",
-	            new String[] { String.valueOf(id) }, null, null, null);
+		Cursor cursor = db.rawQuery(
+				"SELECT " + KEYS2QUERY +
+				" FROM " + TABLE_QUOTES + 
+				queryNth(l), null);
 	    if (cursor != null)
 	        cursor.moveToFirst();
 	    else
@@ -162,7 +167,24 @@ public class LangDB extends SQLiteOpenHelper {
 		if (!dbExists()) throw new LangDBException("DB does not exist");
 		Cite cite = get(0);
 		SQLiteDatabase db = getWritableDatabase();
-		db.delete(TABLE_QUOTES, KEY_ID + "=0", null);
+		String whereClause = KEY_ID + " in (SELECT " +
+				KEY_ID + " FROM " + TABLE_QUOTES + queryNth(0) + ")";
+		db.delete(TABLE_QUOTES, whereClause, null);
+		db.close();
+		return cite;
+	}
+
+	/**
+	 * @return
+	 */
+	public Cite pop() throws LangDBException {
+		if (!dbExists()) throw new LangDBException("DB does not exist");
+		long lastElem = length() - 1;
+		Cite cite = get(lastElem);
+		SQLiteDatabase db = getWritableDatabase();
+		String whereClause = KEY_ID + " in (SELECT " + 
+				KEY_ID + " FROM " + TABLE_QUOTES + queryNth(lastElem) + ")";
+		db.delete(TABLE_QUOTES, whereClause, null);
 		db.close();
 		return cite;
 	}
@@ -189,4 +211,5 @@ public class LangDB extends SQLiteOpenHelper {
 	public String getName() {
 		return name;
 	}
+
 }
