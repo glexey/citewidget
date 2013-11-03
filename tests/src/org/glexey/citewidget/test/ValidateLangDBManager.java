@@ -4,15 +4,12 @@
 package org.glexey.citewidget.test;
 
 import java.util.ArrayList;
-import java.util.Locale;
-
 import org.glexey.citewidget.Cite;
 import org.glexey.citewidget.LangDBManager;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.test.InstrumentationTestCase;
-//import android.test.RenamingDelegatingContext;
 
 /**
  * @author aagaidiu
@@ -40,8 +37,12 @@ public class ValidateLangDBManager extends InstrumentationTestCase {
 		super.tearDown();
 	}
 
-	private String wrongQuote(Cite cite) {
-		return "Wrong quote: \"" + cite.text + "\"";
+	private String wrongQuote(Cite expected, Cite actual) {
+		return "Wrong quote: \"" + actual.text + "\", expected: \"" + expected.text + "\"";
+	}
+
+	private String wrongQuote(Cite actual) {
+		return "Wrong quote: \"" + actual.text + "\"";
 	}
 	
 	public void testResourceIDs() {
@@ -131,23 +132,31 @@ public class ValidateLangDBManager extends InstrumentationTestCase {
 		// Create a set of 2 dictionaries per language, e.g.: "ru.fix", "ru.web"
 		reader.initFromScratch();
 		Cite[] cite = new Cite[10];
-		for (int i=0; i<10; i++) {
+		for (int i = 0; i < 10; i++) {
 			cite[i] = reader.getNextQuote();
 		}
 		// test set contains 9 quotes, so 10th should return a stub
 		assertTrue(cite[9].equals(LangDBManager.stubCite));
 		ArrayList<Cite> hist = reader.getQuoteHistory();
 		assertNotNull(hist);
-		assertEquals(9, hist.size());
-		for (int i=8; i>=0; i--) {
-			Cite histCite = hist.get(8-i);
-			assertEquals(cite[i], histCite);
+		int hist_size = hist.size();
+		assertEquals(9, hist_size);
+		for (int i = 0; i < hist_size; i++) {
+			Cite histCite = hist.get(hist_size - 1 - i);
+			assertEquals(wrongQuote(cite[i], histCite), cite[i], histCite);
 		}
 		// Blow up past max history size and then check history stays at max size
-		for(int i=0; i<LangDBManager.historySize+10; i++)
-			reader.addQuote("ru.web", new Cite("Cite" + i));
+		int n = LangDBManager.historySize + 10;
+		for (int i = 0; i < n; i++) {
+			reader.addQuote("ru", new Cite("Cite" + i));
+			reader.getNextQuote();
+		}
 		ArrayList<Cite> maxhist = reader.getQuoteHistory();
 		assertEquals(LangDBManager.historySize, maxhist.size());
+		// Also check that last quote was preserved
+		Cite expected = new Cite("Cite" + (n - 1));
+		Cite actual = maxhist.get(0);
+		assertTrue(wrongQuote(expected, actual), expected.equals(actual));
 	}
 	
 	public void testLanguageDisabling() {

@@ -87,6 +87,8 @@ public class LangDBManager {
 				cite = db.pop();
 			if (cite != null)
 				hist.append(cite);
+			while (hist.length() > historySize)
+				hist.shift();
 			return cite;
 		} catch (LangDBException e) {
 			e.printStackTrace();
@@ -155,8 +157,25 @@ public class LangDBManager {
 	 * @return
 	 */
 	public ArrayList<Cite> getQuoteHistory() {
-		// TODO Auto-generated method stub
-		return null;
+		LangDB hist_db = new LangDB(ctx, "history");
+		long len;
+		ArrayList<Cite> ret = new ArrayList<Cite>();
+		try {
+			len = hist_db.length();
+		} catch (LangDBException e) {
+			e.printStackTrace();
+			return null;
+		}
+		for (long i = len - 1; i >= 0; i--) {
+			try {
+				Cite cite = hist_db.get(i);
+				if (cite != null)
+					ret.add(cite);
+			} catch (LangDBException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return ret;
 	}
-
 }
