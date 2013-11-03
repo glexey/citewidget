@@ -63,6 +63,16 @@ public class ValidateLangDB extends InstrumentationTestCase {
         assertEquals(quotes.length, db_ru.length());
 	}
 
+	public void testShiftPopEmpty() throws LangDBException {
+		// shift()/pop() should return null if DB is empty
+		db_ru.deleteDB();
+		db_ru.createDB();
+		Cite c0 = db_ru.shift();
+		assertNull(c0);
+		Cite c1 = db_ru.pop();
+		assertNull(c1);
+	}
+	
 	public void testAppendShiftPop() throws LangDBException {
 		db_ru.deleteDB();
 		db_ru.createDB();

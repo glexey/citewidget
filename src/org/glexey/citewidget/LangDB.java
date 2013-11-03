@@ -165,6 +165,7 @@ public class LangDB extends SQLiteOpenHelper {
 	 */
 	public Cite shift() throws LangDBException {
 		if (!dbExists()) throw new LangDBException("DB does not exist");
+		if (length() == 0) return null;
 		Cite cite = get(0);
 		SQLiteDatabase db = getWritableDatabase();
 		String whereClause = KEY_ID + " in (SELECT " +
@@ -179,6 +180,7 @@ public class LangDB extends SQLiteOpenHelper {
 	 */
 	public Cite pop() throws LangDBException {
 		if (!dbExists()) throw new LangDBException("DB does not exist");
+		if (length() == 0) return null;
 		long lastElem = length() - 1;
 		Cite cite = get(lastElem);
 		SQLiteDatabase db = getWritableDatabase();
